@@ -4,6 +4,8 @@
  */
 namespace AppBundle\Service;
 
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -22,19 +24,30 @@ abstract class AbstractChainCommand extends ContainerAwareCommand
     /** @var AbstractChainCommand[]  */
     private static $chainCommands;
 
+    /** @var  Logger|null */
+    private static $logger;
 
     /**
-     * constructor.
+     * AbstractChainCommand constructor.
+     *
+     * @param null|string $parent
+     * @param int|null    $priority
      */
-    public function __construct()
+    public function __construct(?string $parent = null, ?int $priority = null)
     {
         parent::__construct();
 
-        $this->parent = null;
-        $this->priority = 0;
+        $this->parent = $parent;
+        $this->priority = $priority || 0;
 
         self::$chainCommands = is_array(self::$chainCommands) ? self::$chainCommands : array();
         array_push(self::$chainCommands, $this);
+
+        if (false === $this->hasParent()) {
+            $this->log(sprintf('%s is a master command of a command chain that has registered member commands', $this->getName()));
+        } else {
+            $this->log(sprintf('%s registered as a member of %s command chain', $this->getName(), $this->getParent()));
+        }
     }
 
     /**
@@ -52,6 +65,11 @@ abstract class AbstractChainCommand extends ContainerAwareCommand
             throw new \Exception('This a child command and can not be executed directly');
         }
 
+        if (true === $this->hasParent()) {
+            $this->log(sprintf('Executing %s chain members [%s]:', $this->getParent(), $this->getName()));
+        } else {
+            $this->log(sprintf('Executing %s command itself first:', $this->getName()));
+        }
         $result = parent::run($input, $output);
 
         // execute children;
@@ -62,7 +80,22 @@ abstract class AbstractChainCommand extends ContainerAwareCommand
             }
         }
 
+        if (false === $this->hasParent()) {
+            $this->log(sprintf('Execution of %s chain completed.', $this->getName()));
+        }
+
         return $result;
+    }
+
+    /**
+     * @param string $message
+     * @param int    $level
+     */
+    protected function log(string $message, $level = Logger::INFO)
+    {
+        if ($this->getLogger()) {
+            $this->getLogger()->log($level, $message);
+        }
     }
 
     /**
@@ -144,5 +177,18 @@ abstract class AbstractChainCommand extends ContainerAwareCommand
         );
 
         return $children;
+    }
+
+    /**
+     * @return Logger|null|object|\Symfony\Bridge\Monolog\Logger
+     */
+    private function getLogger()
+    {
+        if (!self::$logger) {
+            self::$logger = new Logger('chainedLogger');
+            self::$logger->pushHandler(new StreamHandler('./var/logs/chained.log', Logger::INFO));
+        }
+
+        return self::$logger;
     }
 }

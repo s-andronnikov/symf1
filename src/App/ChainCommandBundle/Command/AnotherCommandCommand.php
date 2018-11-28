@@ -20,10 +20,7 @@ class AnotherCommandCommand extends AbstractChainCommand
      */
     public function __construct()
     {
-        parent::__construct();
-
-        $this->setParent('foo:hello');
-        $this->setPriority(100);
+        parent::__construct('foo:hello', 100);
     }
 
     /**
