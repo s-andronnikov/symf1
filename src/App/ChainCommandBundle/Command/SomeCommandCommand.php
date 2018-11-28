@@ -4,16 +4,16 @@
  */
 namespace App\ChainCommandBundle\Command;
 
-use AppBundle\Service\AbstractChainCommand;
+use AppBundle\Service\AbstractChainService;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class SomeCommandCommand
+ * Class SomeCommandService
  */
-class SomeCommandCommand extends AbstractChainCommand
+class SomeCommandCommand extends AbstractChainService
 {
     /**
      *

@@ -11,9 +11,9 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class AbstractChainCommand
+ * Class AbstractChainService
  */
-class AbstractChainCommand extends ContainerAwareCommand
+class AbstractChainService extends ContainerAwareCommand
 {
     /** @var  string */
     private $parent;
@@ -21,14 +21,14 @@ class AbstractChainCommand extends ContainerAwareCommand
     /** @var  int */
     private $priority;
 
-    /** @var AbstractChainCommand[]  */
+    /** @var AbstractChainService[]  */
     private static $chainCommands;
 
     /** @var  Logger|null */
     private static $logger;
 
     /**
-     * AbstractChainCommand constructor.
+     * AbstractChainService constructor.
      *
      * @param null|string $parent
      * @param int|null    $priority
@@ -98,7 +98,7 @@ class AbstractChainCommand extends ContainerAwareCommand
     /**
      * @param string $parent
      *
-     * @return AbstractChainCommand
+     * @return AbstractChainService
      */
     public function setParent(string $parent): self
     {
@@ -160,7 +160,7 @@ class AbstractChainCommand extends ContainerAwareCommand
     }
 
     /**
-     * @return AbstractChainCommand[]
+     * @return AbstractChainService[]
      */
     private function getChildren(): array
     {
@@ -168,14 +168,14 @@ class AbstractChainCommand extends ContainerAwareCommand
 
         $children = array_filter(
             is_array(self::$chainCommands) ? self::$chainCommands : [],
-            function (AbstractChainCommand $command) use ($name) {
+            function (AbstractChainService $command) use ($name) {
                 return $command->getParent() && $name === $command->getParent();
             }
         );
 
         usort(
             $children,
-            function (AbstractChainCommand $command1, AbstractChainCommand $command2) {
+            function (AbstractChainService $command1, AbstractChainService $command2) {
                 if ($command1->getPriority() === $command2->getPriority()) {
                     return 0;
                 }
