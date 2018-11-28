@@ -13,7 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * Class AbstractChainCommand
  */
-abstract class AbstractChainCommand extends ContainerAwareCommand
+class AbstractChainCommand extends ContainerAwareCommand
 {
     /** @var  string */
     private $parent;
@@ -38,7 +38,7 @@ abstract class AbstractChainCommand extends ContainerAwareCommand
         parent::__construct();
 
         $this->parent = $parent;
-        $this->priority = $priority || 0;
+        $this->priority = $priority ? $priority : 0;
 
         self::$chainCommands = is_array(self::$chainCommands) ? self::$chainCommands : array();
         array_push(self::$chainCommands, $this);
@@ -88,14 +88,11 @@ abstract class AbstractChainCommand extends ContainerAwareCommand
     }
 
     /**
-     * @param string $message
-     * @param int    $level
+     * @return void
      */
-    protected function log(string $message, $level = Logger::INFO)
+    public static function cleanChainCommands()
     {
-        if ($this->getLogger()) {
-            $this->getLogger()->log($level, $message);
-        }
+        self::$chainCommands = array();
     }
 
     /**
@@ -103,7 +100,7 @@ abstract class AbstractChainCommand extends ContainerAwareCommand
      *
      * @return AbstractChainCommand
      */
-    protected function setParent(string $parent): self
+    public function setParent(string $parent): self
     {
         $this->parent = $parent;
 
@@ -113,7 +110,7 @@ abstract class AbstractChainCommand extends ContainerAwareCommand
     /**
      * @return string
      */
-    protected function getParent(): ?string
+    public function getParent(): ?string
     {
         return $this->parent;
     }
@@ -121,7 +118,7 @@ abstract class AbstractChainCommand extends ContainerAwareCommand
     /**
      * @return bool
      */
-    protected function hasParent(): bool
+    public function hasParent(): bool
     {
         return ($this->parent ? true : false);
     }
@@ -129,7 +126,7 @@ abstract class AbstractChainCommand extends ContainerAwareCommand
     /**
      * @return int
      */
-    protected function getPriority(): int
+    public function getPriority(): int
     {
         return $this->priority;
     }
@@ -137,9 +134,20 @@ abstract class AbstractChainCommand extends ContainerAwareCommand
     /**
      * @param int $priority
      */
-    protected function setPriority(int $priority)
+    public function setPriority(int $priority)
     {
         $this->priority = $priority;
+    }
+
+    /**
+     * @param string $message
+     * @param int    $level
+     */
+    protected function log(string $message, $level = Logger::INFO)
+    {
+        if ($this->getLogger()) {
+            $this->getLogger()->log($level, $message);
+        }
     }
 
     /**

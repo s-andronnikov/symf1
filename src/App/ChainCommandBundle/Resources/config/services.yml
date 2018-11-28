@@ -1,4 +1,14 @@
 services:
-#    app_chain_command.example:
-#        class: App\ChainCommandBundle\Example
-#        arguments: ["@service_id", "plain_value", "%parameter%"]
+    App\ChainCommandBundle\Command\SomeCommandCommand:
+        tags:
+          { name: 'console.command'}
+
+    App\ChainCommandBundle\Command\AnotherCommandCommand:
+        tags:
+          { name: 'console.command'}
+
+    App\ChainCommandBundle\Command\ThirdCommandCommand:
+        tags:
+          { name: 'console.command'}
+
+
