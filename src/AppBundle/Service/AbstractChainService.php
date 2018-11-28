@@ -13,7 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * Class AbstractChainService
  */
-class AbstractChainService extends ContainerAwareCommand
+abstract class AbstractChainService extends ContainerAwareCommand
 {
     /** @var  string */
     private $parent;

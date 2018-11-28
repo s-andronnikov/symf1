@@ -4,7 +4,6 @@
  */
 namespace Tests\AppBundle\Service;
 
-use AppBundle\Service\AbstractChainService;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Input\InputInterface;
@@ -12,9 +11,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Tester\CommandTester;
 
 /**
- * Class AbstractChainCommandTest
+ * Class ChainServiceTestTest
  */
-class AbstractChainCommandTest extends KernelTestCase
+class ChainServiceTestTest extends KernelTestCase
 {
     /** @var  Application */
     private $application;
@@ -24,7 +23,7 @@ class AbstractChainCommandTest extends KernelTestCase
      */
     public function testParentOnly()
     {
-        AbstractChainService::cleanChainCommands();
+        ChainServiceTest::cleanChainCommands();
 
         $parent = $this->createParentCommand();
 
@@ -44,7 +43,7 @@ class AbstractChainCommandTest extends KernelTestCase
      */
     public function testChainParentWithChild()
     {
-        AbstractChainService::cleanChainCommands();
+        ChainServiceTest::cleanChainCommands();
 
         $application = $this->getApplication();
 
@@ -71,7 +70,7 @@ class AbstractChainCommandTest extends KernelTestCase
      */
     public function testChainParentWithChildrenPriority()
     {
-        AbstractChainService::cleanChainCommands();
+        ChainServiceTest::cleanChainCommands();
 
         $parent = $this->createParentCommand();
         $child1 = $this->createChildCommand('test:child1', $parent->getName(), 10);
@@ -94,11 +93,11 @@ class AbstractChainCommandTest extends KernelTestCase
     }
 
     /**
-     * @return AbstractChainService
+     * @return ChainServiceTest
      */
     private function createParentCommand()
     {
-        $command = new AbstractChainService();
+        $command = new ChainServiceTest();
         $command->setName('test:parent')->setCode(function (InputInterface $input, OutputInterface $output) {
             $output->writeln('parent-command-output');
         });
@@ -111,11 +110,11 @@ class AbstractChainCommandTest extends KernelTestCase
      * @param string $parent
      * @param int    $priority
      *
-     * @return AbstractChainService
+     * @return ChainServiceTest
      */
     private function createChildCommand(string $name = 'test:child', string $parent = 'test:parent', int $priority = 0)
     {
-        $command = new AbstractChainService($parent, $priority);
+        $command = new ChainServiceTest($parent, $priority);
         $command
             ->setName($name)
             ->setCode(function (InputInterface $input, OutputInterface $output) use ($command) {
